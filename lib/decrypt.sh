@@ -8,9 +8,9 @@ fi
 
 KEY="$KEY"
 
-encrypt_file() {
+decrypt_file() {
     file=$1
-    echo "encrypting $file"
+    echo "decrypting $file"
     if [[ $KEY ]]; then
         gpg --batch --yes --passphrase "$KEY" -d --cipher-algo AES256 $file
         rm -f $file

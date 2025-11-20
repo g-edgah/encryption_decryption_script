@@ -13,49 +13,79 @@ FOLDER="$FOLDER"
 source ./lib/decrypt.sh
 source ./lib/encrypt.sh
 
+current_dir="$PWD"
+
+process_folder_encryption() {
+    folder=$1
+    read -p "encrypt folder $1 [Y/n]?: " confirmation
+    if [[ $confirmation =~ ^[Yy]$ ]] || [[ -z $confirmation ]]; then
+        for file in "${folder[@]}"; do
+            encrypt_file "$file"
+            echo "$file"
+        done
+    elif [[ $confirmation =~ ^[Nn]$ ]]; then
+        echo  -e "encryption cancelled"
+    else
+        echo -e "invalid option"
+    fi
+}
+
+process_folder_decryption() {
+    folder=$1
+    read -p "decrypt folder $1 [Y/n]?: " confirmation
+    if [[ $confirmation =~ ^[Yy]$ ]] || [[ -z $confirmation ]]; then
+        for file in "${folder[@]}"; do
+            decrypt_file "$file"
+            echo "$file"
+        done
+    elif [[ $confirmation =~ ^[Nn]$ ]]; then
+        echo  -e "decryption cancelled"
+    else
+        echo -e "invalid option"
+    fi
+}
 
 main() {
     while true; do
         echo "what would you like to do?"
         echo "  1. encryption"
         echo "  2. decryption"
-        echo "  3. exit"
+        echo -e "  3. exit\n"
         read -p "select an option [1/2/3]: " -r
+        echo ""
         
 
+        # encryption
         if [[ $REPLY == 1 ]]; then
 
            while true; do
-                echo "encrypting"
-                echo "encrypt?"
+             
+                echo -e "\nencrypt?"
                 echo "  1. entire folder"
                 echo "  2. file(s)"
-                echo "  3. exit"
+                echo -e "  3. exit\n"
                 read -p "select an option [1/2/3]: " -r
+                echo ""
 
                 if [[ $REPLY == 1 ]]; then
 
                     if [[ -d $FOLDER ]]; then
-                        read -p "encrypt folder $FOLDER [Y/n]?: " folder
-                        if [[ $folder =~ ^[Yy]$ ]] || [[ -z $folder ]]; then
-                            for file in "${folder[@]}"; do
-                                encrypt_file "$file"
-                                echo "$file"
-                            done
-                        elif [[ $confirm =~ ^[Nn] ]]; then
-                            echo  -e "encryption cancelled"
-                        else
-                            echo -e "invalid option"
-                        fi
+                        process_folder_encryption $FOLDER
                     elif [[ ! -d $FOLDER ]]; then
-                        read -p "no folder specified. enter path of folder containing files: " input_folder
-                        if 
+                        while true; do
+                            read -p "no folder specified. enter path of folder containing files: " input_folder
+                            if [[ -d $input_folder ]]; then
+                                process_folder_encryption input_folder
+                            elif [[ ! -d $input_folder ]]; then
+                                echo "folder specified does not exist"
+                            fi
+                        done
 
                     fi
 
                 elif [[ $REPLY == 2 ]]; then
-                    files=()
-                    i=1
+                    unencrypted_files=()
+                    unencrypted_files_no=1
                     while true; do
                         read -p "enter relative or full path of file $i: " filepath
 
@@ -67,12 +97,12 @@ main() {
                             break
                         elif [[ -f "$filepath" ]]; then
                             files+=("$filepath")
-                            ((i++))
+                            ((unencrypted_files_no++))
                         elif [[ ! -f "$filepath" ]]; then
                             echo " file not found: $filepath"
                         fi
                     done
-
+                    echo ""
                     read -p "encrypt files [Y/n]: " confirm
 
                     if [[ $confirm =~ ^[Yy]$ ]] || [[ -z $confirm ]]; then
@@ -88,7 +118,8 @@ main() {
 
 
                 elif [[ $REPLY == 3 ]]; then
-                    console "something"
+                    echo "exiting"
+                    break
                 elif [[ -z "$REPLY" ]]; then
                     echo -e "\n no option selected. please pick an option \n"
                 else
@@ -97,22 +128,68 @@ main() {
             done
             break
 
-
+        #decryption
         elif [[ $REPLY == 2 ]]; then
             while true; do
-                echo "decrypting"
-                echo "decrypt?"
+               
+                echo -e "\ndecrypt?"
                 echo "  1. entire folder"
                 echo "  2. file(s)"
-                echo "  3. exit"
+                echo -e "  3. exit\n"
                 read -p "select an option [1/2/3]: " -r
+                echo ""
 
                 if [[ $REPLY == 1 ]]; then
-                    echo "1"
+                    if [[ -d $FOLDER ]]; then
+                        process_folder_decryption $FOLDER
+                    elif [[ ! -d $FOLDER ]]; then
+                        while true; do
+                            read -p "no folder specified. enter path of folder containing files: " input_folder
+                            if [[ -d $input_folder ]]; then
+                                process_folder_decryption input_folder
+                            elif [[ ! -d $input_folder ]]; then
+                                echo "folder specified does not exist"
+                            fi
+                        done
+
+                    fi
                 elif [[ $REPLY == 2 ]]; then
-                    echo "2"
+                    undecrypted_files=()
+                    undecrypted_files_no=1
+                    while true; do
+                        read -p "enter relative or full path of file $undecrypted_file_no: " filepath
+
+                        if [[ -z "$filepath" ]]; then
+                            echo -e "\n no input provided \n"
+                            continue
+                        elif [[ "$filepath" == "done" ]]; then
+                            echo "done collecting files to decrypt"
+                            break
+                        elif [[ -f "$filepath" ]]; then
+                            files+=("$filepath")
+                            ((unencrypted_files_no++))
+                        elif [[ ! -f "$filepath" ]]; then
+                            echo " file not found: $filepath"
+                        fi
+                    done
+
+                    echo ""
+                    read -p "decrypt files [Y/n]: " confirm
+
+                    if [[ $confirm =~ ^[Yy]$ ]] || [[ -z $confirm ]]; then
+                        for file in "${files[@]}"; do
+                            decrypt_file "$file"
+                            echo "$file"
+                        done
+                    elif [[ $confirm =~ ^[Nn] ]]; then
+                        echo  -e "encryption cancelled"
+                    else
+                        echo -e "invalid option"
+                    fi
+
                 elif [[ $REPLY == 3 ]]; then
-                    echo "3"
+                    echo "exiting decryption"
+                    break
                 elif [[ -z "$REPLY" ]]; then
                     echo -e "\n no option selected. please pick an option \n"
                 else
@@ -121,15 +198,14 @@ main() {
             done
             break
 
-            
+        #exit  
         elif [[ $REPLY == 3 ]]; then
+            echo ""
             echo "exiting"
             break
 
-
         elif [[ -z "$REPLY" ]]; then
             echo -e "\n no option selected. please pick an option \n"
-
 
         else
             echo -e "\n invalid option. please pick an option from those provided \n"

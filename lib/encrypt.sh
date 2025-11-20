@@ -13,7 +13,7 @@ encrypt_file() {
     echo "encrypting $file"
     if [[ $KEY ]]; then
         gpg --batch --yes --passphrase "$KEY" -c --cipher-algo AES256 $file
-        rm -f $file
+        #rm -f $file
     elif [[ ! $KEY ]]; then
         echo -e "no predefined key provided"
         gpg --batch --yes -c --cipher-algo AES256 $file
