@@ -12,10 +12,10 @@ decrypt_file() {
     file=$1
     echo "decrypting $file"
     if [[ $KEY ]]; then
-        gpg --batch --yes --passphrase "$KEY" -d --cipher-algo AES256 $file
+        gpg --batch --yes --passphrase "$KEY" -o "${file%.gpg}" -d --cipher-algo AES256 $file
         rm -f $file
     elif [[ ! $KEY ]]; then
         echo -e "no predefined key provided"
-        gpg --batch --yes -d --cipher-algo AES256 $file
+        gpg --batch --yes -o "${file%.gpg}" -d --cipher-algo AES256 $file
     fi
 }

@@ -87,7 +87,7 @@ main() {
                     unencrypted_files=()
                     unencrypted_files_no=1
                     while true; do
-                        read -p "enter relative or full path of file $i: " filepath
+                        read -p "enter relative or full path of file $unencrypted_files_no: " filepath
 
                         if [[ -z "$filepath" ]]; then
                             echo -e "\n no input provided \n"
@@ -126,7 +126,6 @@ main() {
                     echo -e "\n invalid option. please pick an option from those provided \n"
                 fi
             done
-            break
 
         #decryption
         elif [[ $REPLY == 2 ]]; then
@@ -157,7 +156,7 @@ main() {
                     undecrypted_files=()
                     undecrypted_files_no=1
                     while true; do
-                        read -p "enter relative or full path of file $undecrypted_file_no: " filepath
+                        read -p "enter relative or full path of file $undecrypted_files_no: " filepath
 
                         if [[ -z "$filepath" ]]; then
                             echo -e "\n no input provided \n"
@@ -196,7 +195,6 @@ main() {
                     echo -e "\n invalid option. please pick an option from those provided \n"
                 fi
             done
-            break
 
         #exit  
         elif [[ $REPLY == 3 ]]; then
