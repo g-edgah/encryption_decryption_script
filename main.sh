@@ -47,6 +47,7 @@ process_folder_decryption() {
 
 main() {
     while true; do
+        echo ""
         echo "what would you like to do?"
         echo "  1. encryption"
         echo "  2. decryption"
@@ -63,7 +64,8 @@ main() {
                 echo -e "\nencrypt?"
                 echo "  1. entire folder"
                 echo "  2. file(s)"
-                echo -e "  3. exit\n"
+                echo "  3. exit encryption"
+                echo -e "  4. exit program\n"
                 read -p "select an option [1/2/3]: " -r
                 echo ""
 
@@ -87,7 +89,7 @@ main() {
                     unencrypted_files=()
                     unencrypted_files_no=1
                     while true; do
-                        read -p "enter relative or full path of file $unencrypted_files_no: " filepath
+                        read -p "enter relative or full path of file $unencrypted_files_no (type 'done' when all files have been specified): " filepath
 
                         if [[ -z "$filepath" ]]; then
                             echo -e "\n no input provided \n"
@@ -118,8 +120,11 @@ main() {
 
 
                 elif [[ $REPLY == 3 ]]; then
-                    echo "exiting"
+                    echo "exiting encryption"
                     break
+                elif [[ $REPLY == 4 ]]; then
+                    echo "exiting program"
+                    exit
                 elif [[ -z "$REPLY" ]]; then
                     echo -e "\n no option selected. please pick an option \n"
                 else
@@ -134,7 +139,8 @@ main() {
                 echo -e "\ndecrypt?"
                 echo "  1. entire folder"
                 echo "  2. file(s)"
-                echo -e "  3. exit\n"
+                echo "  3. exit decryption"
+                echo -e "  4. exit program\n"
                 read -p "select an option [1/2/3]: " -r
                 echo ""
 
@@ -156,7 +162,7 @@ main() {
                     undecrypted_files=()
                     undecrypted_files_no=1
                     while true; do
-                        read -p "enter relative or full path of file $undecrypted_files_no: " filepath
+                        read -p "enter relative or full path of file $undecrypted_files_no (type 'done' when all files have been specified): " filepath
 
                         if [[ -z "$filepath" ]]; then
                             echo -e "\n no input provided \n"
@@ -166,7 +172,7 @@ main() {
                             break
                         elif [[ -f "$filepath" ]]; then
                             files+=("$filepath")
-                            ((unencrypted_files_no++))
+                            ((undecrypted_files_no++))
                         elif [[ ! -f "$filepath" ]]; then
                             echo " file not found: $filepath"
                         fi
@@ -189,6 +195,9 @@ main() {
                 elif [[ $REPLY == 3 ]]; then
                     echo "exiting decryption"
                     break
+                elif [[ $REPLY == 4 ]]; then
+                    echo "exiting program"
+                    exit
                 elif [[ -z "$REPLY" ]]; then
                     echo -e "\n no option selected. please pick an option \n"
                 else
@@ -199,7 +208,7 @@ main() {
         #exit  
         elif [[ $REPLY == 3 ]]; then
             echo ""
-            echo "exiting"
+            echo "exiting program"
             break
 
         elif [[ -z "$REPLY" ]]; then
